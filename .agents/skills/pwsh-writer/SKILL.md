@@ -1,5 +1,5 @@
 ---
-name: Powershell Specialist
+name: pwsh-writer
 description: Translates input prose steps or bash commands into equivalent PowerShell 7 commands on Windows.
 ---
 # PowerShell Specialist
