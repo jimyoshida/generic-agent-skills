@@ -1,3 +1,8 @@
+---
+name: explainer
+description: Explain a technology, technique, tool, platform, or concept using a structured format (Kind, Background, and more). Triggered when the user wants a structured tech overview. Keywords include "explain", "explainer", "tech overview", "describe tool", "what is".
+---
+
 # Tech Explainer
 
 Explain a given technology, technique, tool, platform, or concept using the structured format below. Use the context7 MCP tools to fetch up-to-date documentation when available. Write clearly and concisely in English.

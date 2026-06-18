@@ -1,8 +1,6 @@
 ---
 name: dictionary
 description: Use as an English-Japanese / Japanese-English dictionary and thesaurus. Triggered when the user wants to look up word meanings, translations, synonyms, antonyms, collocations, or etymology. Keywords include "meaning", "define", "translate", "synonym", "antonym", "collocation", "etymology", "thesaurus", "dictionary".
-version: 1.0.0
-allowed-tools: WebSearch
 ---
 
 # English-Japanese / Japanese-English Dictionary & Thesaurus

@@ -1,7 +1,6 @@
 ---
 name: translator
 description: Use as a Japanese-English / English-Japanese translator. Triggered when the user wants to translate text between Japanese and English. Keywords include "translate", "translation", "put into English", "put into Japanese", "English version", "Japanese version".
-version: 1.0.0
 ---
 
 # Japanese-English / English-Japanese Translator
