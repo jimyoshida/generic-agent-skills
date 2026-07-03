@@ -3,12 +3,20 @@
 
 <#
 .SYNOPSIS
-    Installs this repository's skills into the user-level Claude Code scope.
+    Installs this repository's skills into user-level AI coding assistant scopes.
 
 .DESCRIPTION
     Copies every skill directory found under <repo>/.agents/skills into the
-    user-level skills directory (~/.claude/skills). Each skill is a folder that
-    contains a SKILL.md file.
+    user-level skills directories for Claude Code and/or GitHub Copilot.
+    Each skill is a folder that contains a SKILL.md file.
+
+    Target locations:
+    - Claude Code: ~/.claude/skills
+    - GitHub Copilot: ~/.copilot/skills and ~/.agents/skills
+
+.PARAMETER Target
+    Which AI coding assistant(s) to install skills for.
+    Valid values: 'ClaudeCode', 'GitHubCopilot', 'Both' (default).
 
 .PARAMETER Force
     Overwrite skills that already exist in the destination without prompting.
@@ -17,23 +25,47 @@
     Show what would be copied without making any changes.
 
 .EXAMPLE
-    ./install-skills.ps1
+    ./Install-Skill.ps1
 
 .EXAMPLE
-    ./install-skills.ps1 -Force
+    ./Install-Skill.ps1 -Target ClaudeCode -Force
+
+.EXAMPLE
+    ./Install-Skill.ps1 -Target GitHubCopilot
 #>
 
 [CmdletBinding(SupportsShouldProcess)]
 param(
+    [ValidateSet('ClaudeCode', 'GitHubCopilot', 'Both')]
+    [string]$Target = 'Both',
+
     [switch]$Force
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-# Source: .agents/skills relative to this script. Destination: user-level scope.
+# Source: .agents/skills relative to this script
 $SourceDir = Join-Path $PSScriptRoot '.agents/skills'
-$DestDir   = Join-Path $HOME '.claude/skills'
+
+# Destination directories based on target
+$DestDirs = @()
+if ($Target -in 'ClaudeCode', 'Both') {
+    $DestDirs += @{
+        Name = 'Claude Code'
+        Path = Join-Path $HOME '.claude/skills'
+    }
+}
+if ($Target -in 'GitHubCopilot', 'Both') {
+    $DestDirs += @{
+        Name = 'GitHub Copilot (primary)'
+        Path = Join-Path $HOME '.copilot/skills'
+    }
+    $DestDirs += @{
+        Name = 'GitHub Copilot (shared)'
+        Path = Join-Path $HOME '.agents/skills'
+    }
+}
 
 if (-not (Test-Path -LiteralPath $SourceDir)) {
     throw "Source skills directory not found: $SourceDir"
@@ -48,35 +80,46 @@ if (-not $skills) {
     return
 }
 
-if (-not (Test-Path -LiteralPath $DestDir)) {
-    if ($PSCmdlet.ShouldProcess($DestDir, 'Create directory')) {
-        New-Item -ItemType Directory -Path $DestDir -Force | Out-Null
-    }
-}
+$totalInstalled = 0
+$totalSkipped   = 0
 
-Write-Host "Installing $($skills.Count) skill(s) to $DestDir" -ForegroundColor Cyan
+foreach ($destInfo in $DestDirs) {
+    $destDir = $destInfo.Path
+    $destName = $destInfo.Name
 
-$installed = 0
-$skipped   = 0
-
-foreach ($skill in $skills) {
-    $target = Join-Path $DestDir $skill.Name
-
-    if ((Test-Path -LiteralPath $target) -and -not $Force) {
-        Write-Host "  [skip] $($skill.Name) (already exists; use -Force to overwrite)" -ForegroundColor Yellow
-        $skipped++
-        continue
-    }
-
-    if ($PSCmdlet.ShouldProcess($target, "Copy skill '$($skill.Name)'")) {
-        if (Test-Path -LiteralPath $target) {
-            Remove-Item -LiteralPath $target -Recurse -Force
+    if (-not (Test-Path -LiteralPath $destDir)) {
+        if ($PSCmdlet.ShouldProcess($destDir, 'Create directory')) {
+            New-Item -ItemType Directory -Path $destDir -Force | Out-Null
         }
-        Copy-Item -LiteralPath $skill.FullName -Destination $target -Recurse -Force
-        Write-Host "  [ok]   $($skill.Name)" -ForegroundColor Green
-        $installed++
     }
+
+    Write-Host "`nTarget: $destName" -ForegroundColor Magenta
+    Write-Host "Installing $($skills.Count) skill(s) to $destDir" -ForegroundColor Cyan
+
+    $installed = 0
+    $skipped   = 0
+
+    foreach ($skill in $skills) {
+        $targetPath = Join-Path $destDir $skill.Name
+
+        if ((Test-Path -LiteralPath $targetPath) -and -not $Force) {
+            Write-Host "  [skip] $($skill.Name) (already exists; use -Force to overwrite)" -ForegroundColor Yellow
+            $skipped++
+            continue
+        }
+
+        if ($PSCmdlet.ShouldProcess($targetPath, "Copy skill '$($skill.Name)' to $destName")) {
+            if (Test-Path -LiteralPath $targetPath) {
+                Remove-Item -LiteralPath $targetPath -Recurse -Force
+            }
+            Copy-Item -LiteralPath $skill.FullName -Destination $targetPath -Recurse -Force
+            Write-Host "  [ok]   $($skill.Name)" -ForegroundColor Green
+            $installed++
+        }
+    }
+
+    $totalInstalled += $installed
+    $totalSkipped   += $skipped
 }
 
-Write-Host ""
-Write-Host "Done. Installed: $installed, Skipped: $skipped" -ForegroundColor Cyan
+Write-Host "`nDone. Total installed: $totalInstalled, Total skipped: $totalSkipped" -ForegroundColor Cyan
