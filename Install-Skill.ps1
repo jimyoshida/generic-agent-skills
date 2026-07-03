@@ -72,8 +72,8 @@ if (-not (Test-Path -LiteralPath $SourceDir)) {
 }
 
 # A skill is any immediate subdirectory of the source that contains a SKILL.md.
-$skills = Get-ChildItem -LiteralPath $SourceDir -Directory |
-    Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName 'SKILL.md') }
+$skills = @(Get-ChildItem -LiteralPath $SourceDir -Directory |
+    Where-Object { Test-Path -LiteralPath (Join-Path $_.FullName 'SKILL.md') })
 
 if (-not $skills) {
     Write-Warning "No skills (directories containing SKILL.md) found in $SourceDir"
