@@ -1,0 +1,6 @@
+# Fetched MediaWiki output (produced by the wikitext-fetcher skill)
+*.wikitext
+
+# Python bytecode cache
+__pycache__/
+*.pyc
