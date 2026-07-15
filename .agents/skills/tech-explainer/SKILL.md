@@ -1,5 +1,5 @@
 ---
-name: explainer
+name: tech-explainer
 description: Explain a technology, technique, tool, platform, or concept using a structured format (Kind, Background, and more). Triggered when the user wants a structured tech overview. Keywords include "explain", "explainer", "tech overview", "describe tool", "what is".
 ---
 
