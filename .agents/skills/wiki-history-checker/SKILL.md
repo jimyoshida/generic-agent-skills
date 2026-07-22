@@ -140,3 +140,12 @@ article with no further editing.
   of manufacturing gaps.
 - Note the article's last-covered date; timelines often lag recent events, which
   is a common and useful class of gap to surface.
+- **Write neutral, encyclopedic prose — not marketing copy or a spec sheet.**
+  Wikipedia's style rules (WP:NPOV, WP:NOTPROMO, WP:NOTCHANGELOG) apply to every
+  paste-ready entry: describe *what happened* in plain factual language, not why
+  it's impressive. Avoid vendor adjectives ("powerful", "seamless",
+  "cutting-edge", "revolutionary"), superlatives without a citation backing the
+  claim, and puffery lifted from press releases. Don't reduce an entry to a bare
+  feature/spec list (e.g. a dump of version numbers, specs, or bullet-point
+  capabilities) — write it as a sentence describing the event, matching the
+  prose or list style already used by the surrounding entries.
